@@ -2,8 +2,11 @@ import os
 from newsapi import NewsApiClient
 
 api_key = os.getenv("NEWS_API_KEY")
-news_client = NewsApiClient(api_key=api_key)
 
+if api_key is None:
+    raise Exception("News API key is not set")
+
+news_client = NewsApiClient(api_key=api_key)
 
 def fetch_headline_news(params):
     '''

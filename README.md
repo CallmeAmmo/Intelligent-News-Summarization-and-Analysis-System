@@ -3,7 +3,7 @@ A system that fetches news articles, processes them using an LLM, and provides i
 
 
 # Steps to follow
-1. Create a environment_variable.sh file and puyt the keys in it.
+1. Create a environment_variable.sh file and put the keys in it.
 2. Make it a executable file
 3. chmod +x environment_variable.sh
-4. execute the file (in ubuntu ./environment_variable.sh)
+4. execute the file (in ubuntu source ./environment_variable.sh)
