@@ -7,3 +7,10 @@ A system that fetches news articles, processes them using an LLM, and provides i
 2. Make it a executable file
 3. chmod +x environment_variable.sh
 4. execute the file (in ubuntu source ./environment_variable.sh)
+
+
+
+
+# Flow
+1. fetch data from the newsapi app
+2. store the data after small transformation in the sqlite db
