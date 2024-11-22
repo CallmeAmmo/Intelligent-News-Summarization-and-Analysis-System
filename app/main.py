@@ -5,9 +5,9 @@ params = {
     "q": "bitcoin",
     "language": "en",
     "from_param" : '2024-11-01',
-    "to" : '2024-11-01',
+    "to" : '2024-11-02',
     "sort_by": "relevancy",
-    "page": 1
+    "page": 2
     }
 
 

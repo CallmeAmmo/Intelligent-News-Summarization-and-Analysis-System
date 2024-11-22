@@ -7,8 +7,7 @@ A system that fetches news articles, processes them using an LLM, and provides i
 2. Make it a executable file
 3. chmod +x environment_variable.sh
 4. execute the file (in ubuntu source ./environment_variable.sh)
-
-
+5. run the main.py from the root (Intelligent-News-Summarization-and-Analysis-System) directory
 
 
 # Flow

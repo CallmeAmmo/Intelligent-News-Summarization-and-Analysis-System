@@ -1,6 +1,17 @@
 import sqlite3
 import pandas as pd
 import os
+from newspaper import Article
+
+def fetch_full_article_with_newspaper(url):
+    try:
+        article = Article(url)
+        article.download()
+        article.parse()
+        return article.text
+    except Exception as e:
+        print(f"Error extracting article: {e}")
+        return None
 
 def initialie_database():
 
@@ -17,6 +28,7 @@ def initialie_database():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
                 content TEXT,
+                full_content TEXT,
                 source_name TEXT,
                 author TEXT,
                 published_date TEXT,
@@ -35,15 +47,17 @@ def initialie_database():
 def update_article(article):
     conn =sqlite3.connect('news_data.db')
     curosr=conn.cursor()
+    success = False
 
     try:
         query = """
-                INSERT OR IGNORE INTO article (title, content, source_name, author, published_date, url, description, urlToImage)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT OR IGNORE INTO articles (title, content, full_content, source_name, author, published_date, url, description, urlToImage)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """
         curosr.execute(query, (
             article.get('title'),
             article.get('content'),
+            article.get('full_content'),
             article.get('name'),
             article.get('author'),
             article.get('publishedAt'),
@@ -51,17 +65,30 @@ def update_article(article):
             article.get('description'),
             article.get('urlToImage')
         ))
+
+        if curosr.rowcount > 0:
+            success = True
+
     except Exception as e:
         print(f"Error saving article in database: {e}")
     finally:
         conn.commit()
         conn.close()
+    
+    return success
 
 
 def update_articles(processed_articles):
-
+    cnt =0
     for i in processed_articles:
-        update_article(i)
+        success = update_article(i)
+        if success:
+            cnt+=1
+
+            if(cnt % 50 == 0):
+                print(f'Updated {cnt} out of {len(processed_articles)} new articles')
+    
+    return cnt
 
 def update_db(news_data):
 
@@ -78,14 +105,15 @@ def update_db(news_data):
             'urlToImage': i.get('urlToImage', None),
             'publishedAt': i.get('publishedAt', None),
             'content': i.get('content', None)
-
         }
     
         if processed_article.get('url'):
+            full_content = fetch_full_article_with_newspaper(processed_article.get('url'))
+            processed_article['full_content'] = full_content
             processed_articles.append(processed_article)
     
-    update_articles(processed_articles)
-    print(f'Updated db with {len(processed_articles)} new articles')
+    arts_cnt = update_articles(processed_articles)
+    print(f'Updated db with {arts_cnt} out of {len(processed_articles)} new articles')
 
 
 def get_database(query):
