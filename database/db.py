@@ -2,8 +2,9 @@ import sqlite3
 import pandas as pd
 import os
 from newspaper import Article
+from tqdm import tqdm
 
-def fetch_full_article_with_newspaper(url):
+def fetch_full_article_with_newspaper(url) -> str:
     try:
         article = Article(url)
         article.download()
@@ -13,12 +14,8 @@ def fetch_full_article_with_newspaper(url):
         print(f"Error extracting article: {e}")
         return None
 
-def initialie_database():
-
-    db = os.path.exists('news_data.db')
-    if db:
-        print("Database already exists!")
-        return
+def initialize_database() -> None:
+    print('Initializing database...')
 
     conn = sqlite3.connect('news_data.db')
     cursor = conn.cursor()
@@ -41,10 +38,10 @@ def initialie_database():
 
     conn.commit()
     conn.close()
-    print("Database initialized with schema!")
+    print("Database initialized with schema!\n")
 
 
-def update_article(article):
+def update_article(article) -> bool:
     conn =sqlite3.connect('news_data.db')
     curosr=conn.cursor()
     success = False
@@ -78,19 +75,22 @@ def update_article(article):
     return success
 
 
-def update_articles(processed_articles):
+def update_articles(processed_articles) -> int:
     cnt =0
-    for i in processed_articles:
+    for i in tqdm(processed_articles):
         success = update_article(i)
         if success:
             cnt+=1
 
-            if(cnt % 50 == 0):
-                print(f'Updated {cnt} out of {len(processed_articles)} new articles')
-    
     return cnt
 
-def update_db(news_data):
+def update_db(news_data) -> None:
+   
+    if not os.path.exists('news_data.db'):
+        print("Database does not exist!\n")
+        initialize_database()
+    
+    print('Updating database...\n')
 
     articles = news_data.get('articles', [])
     processed_articles = []
@@ -108,7 +108,9 @@ def update_db(news_data):
         }
     
         if processed_article.get('url'):
-            full_content = fetch_full_article_with_newspaper(processed_article.get('url'))
+            # full_content = fetch_full_article_with_newspaper(processed_article.get('url'))
+            full_content = processed_article.get('content')
+
             processed_article['full_content'] = full_content
             processed_articles.append(processed_article)
     
@@ -116,7 +118,7 @@ def update_db(news_data):
     print(f'Updated db with {arts_cnt} out of {len(processed_articles)} new articles')
 
 
-def get_database(query):
+def get_database(query) -> pd.DataFrame:
     conn = sqlite3.connect('news_data.db')
     cursor = conn.cursor()
 
@@ -128,8 +130,4 @@ def get_database(query):
     conn.close()
     df = pd.DataFrame(rows, columns=columns)
     return df
-
-if __name__ == "__main__":
-    initialie_database()
-
 

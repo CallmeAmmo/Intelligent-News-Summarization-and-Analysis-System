@@ -1,6 +1,7 @@
 # Intelligent-News-Summarization-and-Analysis-System (INSAS)
 A system that fetches news articles, processes them using an LLM, and provides intelligent analysis. 
 
+python version 3.9.20
 
 # Steps to follow
 1. Create a environment_variable.sh file and put the keys in it.
@@ -13,3 +14,5 @@ A system that fetches news articles, processes them using an LLM, and provides i
 # Flow
 1. fetch data from the newsapi app
 2. store the data after small transformation in the sqlite db
+3. install the ollama from docker hub and run it locally
+4. Summarize the text and using llama model and store it in database
