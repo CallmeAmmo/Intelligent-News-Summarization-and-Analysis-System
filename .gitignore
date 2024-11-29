@@ -4,3 +4,10 @@
 # ignore environment_variable files
 environment_variable.sh
 
+# Ignore compiled Python files
+*.pyc
+__pycache__/
+
+*.db
+
+*.ipynb
